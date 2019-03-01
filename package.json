@@ -23,7 +23,7 @@
     "lint": "tslint -t stylish --project \"tsconfig.json\"",
     "lint:fix": "tslint --fix -t stylish --project \"tsconfig.json\"",
     "pretest": "npm run lint",
-    "test": "npm run test-only",
+    "test": "env $(print-env) npm run test-only",
     "test-only": "jest --coverage --runInBand",
     "test:watch": "jest --watch",
     "coveralls": "cat ./coverage/lcov.info | coveralls"

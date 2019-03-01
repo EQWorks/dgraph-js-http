@@ -18,11 +18,18 @@ declare const fetch: any; // tslint:disable-line no-any
  */
 export class DgraphClientStub {
     private addr: string;
-    constructor(addr?: string | null) {
+    private headers: { [k: string]: string };
+    constructor(addr?: string | null, headers?: { [k: string]: string } | null) {
         if (addr == null) {
             this.addr = "http://localhost:8080"; // tslint:disable-line no-http-string
         } else {
             this.addr = addr;
+        }
+
+        if (headers == null) {
+            this.headers = {};
+        } else {
+            this.headers = headers;
         }
     }
 
@@ -122,6 +129,7 @@ export class DgraphClientStub {
     public health(): Promise<string> {
         return fetch(this.getURL("health"), { // tslint:disable-line no-unsafe-any
             method: "GET",
+            headers: this.headers,
         })
             .then((response: { status: number; text(): string }) => {
                 if (response.status >= 300 || response.status < 200) {
@@ -133,7 +141,7 @@ export class DgraphClientStub {
 
     private callAPI<T>(path: string, config: {}): Promise<T> {
         const url = this.getURL(path);
-        return fetch(url, config) // tslint:disable-line no-unsafe-any
+        return fetch(url, {...config, ...this.headers}) // tslint:disable-line no-unsafe-any
             .then((response: { status: number; json(): T }) => {
                 if (response.status >= 300 || response.status < 200) {
                     throw new Error(`Invalid status code = ${response.status}`);
